@@ -13,18 +13,19 @@
         table {
             border-collapse: collapse; 
         }
-        td, th {
+        td {
             border: 1px solid #5a1f1f;
             width: 50px;
             height: 50px;
             text-align: center;
             font-size: 18px;
         }
-        .header {
+        table tr:first-child td,
+        table tr td:first-child {
             background-color: #fcd5b4; 
             font-weight: bold;
         }
-        .corner {
+        table tr:first-child td:first-child {
             background-color: #800000;
         }
         .diagonal {
@@ -35,35 +36,43 @@
 <body>
 
 <?php
-echo "<table>\n";
+
+$data =[];
+
 for ($i = 0; $i <= 10; $i++) {
-    echo "<tr>\n";
     for ($j = 0; $j <= 10; $j++) {
+        
         if ($i == 0 && $j == 0) {
-            echo "<th class='corner'></th>";
+            $data[$i][$j] = ''; 
+            continue;
         }
-        elseif ($i == 0) {
-            echo "<th class='header'>" . $j . "</th>";
-        }
-        elseif ($j == 0) {
-            echo "<th class='header'>" . $i . "</th>";
-        }
-        else {
-            $result = $i * $j;
-            
-            if ($i == $j) {
-                echo "<td class='diagonal'>" . $result . "</td>";
-            } else {
-                echo "<td>" . $result . "</td>";
-            }
+        
+        if ($i == 0 || $j == 0) {
+            $data[$i][$j] = $i + $j; 
+        } else {
+            $data[$i][$j] = $i * $j;
         }
     }
-    
-    echo "</tr>\n";
 }
-
-echo "</table>\n";
 ?>
+
+<table>
+    <?php foreach ($data as $i => $row): ?>
+        <tr>
+            <?php foreach ($row as $j => $cell): ?>
+                
+                <?php 
+                $class = ($i == $j && $i != 0) ? 'diagonal' : ''; 
+                ?>
+                
+                <td class="<?= $class ?>">
+                    <?= $cell ?>
+                </td>
+                
+            <?php endforeach; ?>
+        </tr>
+    <?php endforeach; ?>
+</table>
 
 </body>
 </html>
