@@ -6,6 +6,7 @@ WHERE
     name = 'Gary'
     AND lastname = 'Harrison';
 
+-- найдена 1 запись
 UPDATE clients
 SET
     dbirth = '1930-10-21'
@@ -15,6 +16,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -23,6 +25,7 @@ WHERE
     name = 'Michael'
     AND lastname = 'Atwood';
 
+-- найдена 1 запись
 UPDATE clients
 SET
     dbirth = '1934-04-12'
@@ -32,6 +35,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -40,6 +44,7 @@ WHERE
     name = 'Amy'
     AND lastname = 'Majors';
 
+-- найдена 1 запись
 UPDATE clients
 SET
     dbirth = '1975-08-01'
@@ -49,6 +54,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -57,6 +63,7 @@ WHERE
     name = 'Katherine'
     AND lastname = 'Smith';
 
+-- найдена 1 запись
 UPDATE clients
 SET
     dbirth = '1959-09-22'
@@ -66,6 +73,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -73,6 +81,7 @@ FROM
 WHERE
     dbirth < '1933-01-01';
 
+-- найдено 13 записей
 UPDATE clients
 SET
     phone = NULL
@@ -81,6 +90,7 @@ WHERE
 LIMIT
     13;
 
+-- обновлено 13 строк
 SELECT
     *
 FROM
@@ -89,6 +99,7 @@ WHERE
     name = 'John'
     AND lastname = 'Ohara';
 
+-- найдена 1 запись
 UPDATE clients
 SET
     name = 'Johanna',
@@ -99,6 +110,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -107,6 +119,7 @@ WHERE
     name = 'Humberto'
     AND lastname = 'Hoosier';
 
+-- найдена 1 запись
 UPDATE clients
 SET
     phone = '79990001122'
@@ -116,6 +129,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -124,6 +138,7 @@ WHERE
     name = 'Irene'
     AND lastname = 'Schreiber';
 
+-- найдена 1 запись
 UPDATE clients
 SET
     phone = '79993334455'
@@ -133,6 +148,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -141,6 +157,7 @@ WHERE
     name = 'Donna'
     AND lastname = 'Wallace';
 
+-- найдена 1 запись
 UPDATE clients
 SET
     phone = '79996667788'
@@ -150,6 +167,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -157,12 +175,14 @@ FROM
 WHERE
     id IN (215, 340, 449, 470, 607);
 
+-- найдено 4 записи 
 DELETE FROM clients
 WHERE
     id IN (215, 340, 449, 470, 607)
 LIMIT
     4;
 
+-- удалено 4 строки
 SELECT
     *
 FROM
@@ -174,6 +194,7 @@ WHERE
         OR (dbirth BETWEEN '1972-09-10' AND '1972-09-15')
     );
 
+-- найдено 2 записи
 DELETE FROM clients
 WHERE
     gender = 'M'
@@ -184,6 +205,7 @@ WHERE
 LIMIT
     2;
 
+-- удалено 2 строки
 CREATE TABLE
     IF NOT EXISTS my_table (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -259,6 +281,7 @@ FROM
 WHERE
     id = 5;
 
+-- найдена 1 запись
 UPDATE my_table
 SET
     name = 'Новое имя'
@@ -267,6 +290,7 @@ WHERE
 LIMIT
     1;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -274,6 +298,7 @@ FROM
 WHERE
     category_id = 2;
 
+-- найдена 1 запись
 UPDATE my_table
 SET
     price = price + 500
@@ -282,6 +307,7 @@ WHERE
 LIMIT
     5;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -289,6 +315,7 @@ FROM
 WHERE
     description IS NULL;
 
+-- найдена 1 запись
 UPDATE my_table
 SET
     description = 'Нет данных'
@@ -297,6 +324,7 @@ WHERE
 LIMIT
     3;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -304,6 +332,7 @@ FROM
 WHERE
     status = 'expired';
 
+-- найдена 1 запись
 UPDATE my_table
 SET
     is_deleted = 1
@@ -312,6 +341,7 @@ WHERE
 LIMIT
     2;
 
+-- обновлена 1 строка
 SELECT
     *
 FROM
@@ -319,8 +349,11 @@ FROM
 WHERE
     created_at < '2023-01-01';
 
+-- найдена 1 запись
 DELETE FROM my_table
 WHERE
     created_at < '2023-01-01'
 LIMIT
     4;
+
+-- удалена 1 строка
