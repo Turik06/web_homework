@@ -1,21 +1,18 @@
 <?php
-
-
 interface TransactionInterface {
     public function deposit($amount);
     public function withdraw($amount);
 }
 
-
 trait LoggerTrait {
     protected $logs = [];
 
-    public function logOperation($message) {
+    public function log_operation($message) {
         $this->logs[] = $message;
-        echo "[LOG]: " . $message . "<br/>";
+        echo "[LOG]: " . $message . "<br/>\n";
     }
 
-    public function getLogs() {
+    public function get_logs() {
         return $this->logs;
     }
 }
@@ -23,26 +20,26 @@ trait LoggerTrait {
 class BankAccount {
     public $ownerName;
     protected $balance;
-    
     private $secretPin;
+    
+    const CURRENCY = 'RUB';
 
     public function __construct($ownerName, $initialBalance, $pin) {
         $this->ownerName = $ownerName;
-        $this->balance = (float)$initialBalance; 
-        $this->secretPin = (int)$pin;
+        $this->balance = $initialBalance; 
+        $this->secretPin = $pin;
     }
 
-    // Метод для чтения защищенного свойства
-    public function getBalance() {
-        return $this->balance;
+    public function get_balance() {
+        return $this->balance . ' ' . static::CURRENCY;
     }
 
-    public function changePin($oldPin, $newPin) {
-        if ($this->secretPin === (int)$oldPin) {
-            $this->secretPin = (int)$newPin;
-            echo "Успешно: PIN-код обновлен.<br/>";
+    public function change_pin($oldPin, $newPin) {
+        if ($this->secretPin === $oldPin) {
+            $this->secretPin = $newPin;
+            echo "Успешно: PIN-код обновлен.<br/>\n";
         } else {
-            echo "Ошибка: Неверный старый PIN-код.<br/>";
+            echo "Неверный старый PIN-код.<br/>\n";
         }
     }
 }
@@ -51,58 +48,52 @@ class CreditAccount extends BankAccount implements TransactionInterface {
     
     use LoggerTrait;
 
-    protected $creditLimit;
+    public $creditLimit;
 
     public function __construct($ownerName, $initialBalance, $pin, $creditLimit) {
         parent::__construct($ownerName, $initialBalance, $pin);
-        $this->creditLimit = (float)$creditLimit;
+        $this->creditLimit = $creditLimit;
     }
 
     public function deposit($amount) {
-        $amount = (float)$amount;
         if ($amount > 0) {
             $this->balance += $amount;
-            $this->logOperation("Пополнение на $amount. Новый баланс: $this->balance");
+            $this->log_operation("Пополнение на $amount. Баланс: {$this->get_balance()}");
         }
     }
 
     public function withdraw($amount) {
-        $amount = (float)$amount;
         $availableFunds = $this->balance + $this->creditLimit;
 
         if ($amount <= $availableFunds) {
             $this->balance -= $amount;
-            $this->logOperation("Снятие $amount. Новый баланс: $this->balance");
+            $this->log_operation("Снятие $amount. Баланс: {$this->get_balance()}");
         } else {
-            $this->logOperation("ОШИБКА: Превышен кредитный лимит при попытке снять $amount!");
+            $this->log_operation("Недостаточно средств для снятия $amount");
         }
     }
 
-    public function getAccountInfo() {
-        return "Счет клиента: {$this->ownerName} | Текущий Баланс: {$this->balance} | Доступный лимит: {$this->creditLimit}<br/>";
+    public function get_info() {
+        return "Клиент: {$this->ownerName} | Баланс: {$this->get_balance()} | Лимит: {$this->creditLimit} " . static::CURRENCY . "<br/>\n";
     }
 }
 
+echo "<h3>Работа с базовым классом</h3>\n";
+$baseAcc = new BankAccount('Турал Сулейманов', 1000, 1234);
+echo "Владелец: " . $baseAcc->ownerName . "<br/>\n";
+echo "Баланс: " . $baseAcc->get_balance() . "<br/>\n";
 
-echo "<h3>Банковский Счет</h3>";
-$baseAcc = new BankAccount('Tural Great', 1000, 1234);
-echo "Владелец: " . $baseAcc->ownerName . "<br/>";
-echo "Баланс: " . $baseAcc->getBalance() . "<br/>";
+$baseAcc->change_pin(1234, 4321); 
 
-$baseAcc->changePin(9999, 4321); 
-$baseAcc->changePin(1234, 4321); 
-
-echo "<h3>=== Кредитный Счет (наследник) ===</h3>";
-$creditAcc = new CreditAccount('Mary Smith', 500, 8888, 2000);
-echo $creditAcc->getAccountInfo();
-
+echo "<h3>Работа с наследником (Кредитный счет)</h3>\n";
+$creditAcc = new CreditAccount('Александр Шеметов', 500, 8888, 2000);
+echo $creditAcc->get_info();
 
 $creditAcc->withdraw(1000); 
-$creditAcc->deposit(200);  
-$creditAcc->withdraw(3000); 
+$creditAcc->deposit(200);   
+$creditAcc->withdraw(5000); 
 
-echo "<br/><b>История операций из трейта:</b><br/>";
-$logs = $creditAcc->getLogs();
-foreach ($logs as $i => $log) {
-    echo ($i + 1) . '. ' . $log . "<br/>";
+echo "<br/><b>История операций:</b><br/>\n";
+foreach ($creditAcc->get_logs() as $entry) {
+    echo "- " . $entry . "<br/>\n";
 }
