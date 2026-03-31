@@ -1,3 +1,4 @@
+-- Задача 10
 -- Для того чтобы запустить скрипт нескольок раз
 DROP TABLE IF EXISTS Composition;
 DROP TABLE IF EXISTS Products;
