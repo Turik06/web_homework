@@ -1,42 +1,72 @@
 <?php
-$errors = [];
-$success = false;
 
-$data = [
-    'name' => '', 'surname' => '', 'email' => '', 
-    'phone' => '', 'topic' => '', 'payment' => '', 'newsletter' => ''
+$topics = [
+    'business' => 'Бизнес',
+    'tech' => 'Технологии',
+    'marketing' => 'Реклама и Маркетинг'
 ];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data['name'] = trim($_POST['name'] ?? '');
-    $data['surname'] = trim($_POST['surname'] ?? '');
-    $data['email'] = trim($_POST['email'] ?? '');
-    $data['phone'] = trim($_POST['phone'] ?? '');
-    $data['topic'] = $_POST['topic'] ?? '';
-    $data['payment'] = $_POST['payment'] ?? '';
-    $data['newsletter'] = isset($_POST['newsletter']) ? 'Да' : 'Нет';
+$payments = [
+    'webmoney' => 'WebMoney',
+    'yandex' => 'Яндекс.Деньги',
+    'paypal' => 'PayPal',
+    'card' => 'кредитная карта'
+];
 
-    if (empty($data['name'])) $errors[] = "Введите имя.";
-    if (empty($data['surname'])) $errors[] = "Введите фамилию.";
-    if (empty($data['email'])) $errors[] = "Введите email.";
-    if (empty($data['phone'])) $errors[] = "Введите телефон.";
-    if (empty($data['topic'])) $errors[] = "Выберите тематику.";
-    if (empty($data['payment'])) $errors[] = "Выберите метод оплаты.";
-
-    if (empty($errors)) {
-        $filename = 'app_' . uniqid() . '.txt';
-        $content = "Дата: " . date('Y-m-d H:i:s') . "\n";
-        foreach ($data as $key => $value) {
-            $content .= "$key: $value\n";
-        }
-        
-        file_put_contents($filename, $content);
-        $success = true;
-        $data = array_fill_keys(array_keys($data), '');
+$success_msg = false;
+if (!empty($_GET['success'])) {
+    if ($_GET['success'] >= time()) {
+        $success_msg = true;
+    } else {
+        header('Location: hw5_ex1.php');
+        exit;
     }
 }
 
+$errors = [];
+if (count($_POST)) {
 
+    if (empty($_POST['name'])) {
+        $errors['name'] = 'Поле с именем обязательно к заполнению!';
+    }
+    if (empty($_POST['surname'])) {
+        $errors['surname'] = 'Поле с фамилией обязательно к заполнению!';
+    }
+    if (empty($_POST['email'])) {
+        $errors['email'] = 'Поле с email обязательно к заполнению!';
+    }
+    if (empty($_POST['phone'])) {
+        $errors['phone'] = 'Поле с телефоном обязательно к заполнению!';
+    }
+    if (empty($_POST['topic'])) {
+        $errors['topic'] = 'Выберите тематику!';
+    }
+    if (empty($_POST['payment'])) {
+        $errors['payment'] = 'Выберите метод оплаты!';
+    }
 
+    if (!$errors) {
+        $dir = 'data/';
 
-    require 'hw5_ex1.html';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        $filename = $dir . 'app-' . date('Y-m-d-H-i-s') . '-' . uniqid() . '.txt';
+
+        $contents = 'Имя: ' . $_POST['name'] . "\n";
+        $contents .= 'Фамилия: ' . $_POST['surname'] . "\n";
+        $contents .= 'Email: ' . $_POST['email'] . "\n";
+        $contents .= 'Телефон: ' . $_POST['phone'] . "\n";
+        $contents .= 'Тематика: ' . ($topics[$_POST['topic']] ?? '-') . "\n";
+        $contents .= 'Оплата: ' . ($payments[$_POST['payment']] ?? '-') . "\n";
+        $contents .= 'Рассылка: ' . (!empty($_POST['newsletter']) ? 'Да' : 'Нет') . "\n";
+
+        file_put_contents($filename, $contents);
+
+        header('Location: hw5_ex1.php?success=' . (time() + 10));
+        exit;
+    }
+}
+
+require 'hw5_ex1.html';

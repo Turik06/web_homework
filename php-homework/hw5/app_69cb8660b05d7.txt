@@ -1,8 +1,0 @@
-Дата: 2026-03-31 08:31:28
-name: Турал
-surname: Сулейманов
-email: ghdssfdf@gmail.com
-phone: 89501490924
-topic: Бизнес
-payment: Яндекс.Деньги
-newsletter: Да
