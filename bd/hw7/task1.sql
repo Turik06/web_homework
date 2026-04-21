@@ -2,7 +2,7 @@
 -- a
 SELECT COUNT(*) AS total_clients FROM clients;
 -- b
-SELECT COUNT(*) AS born_after_1990 FROM clients WHERE YEAR(dbirth) > 1990;
+SELECT COUNT(*) AS born_after_1990 FROM clients WHERE YEAR(dbirth) < 1990;
 -- c
 SELECT name, COUNT(*) AS count_names 
 FROM clients 
