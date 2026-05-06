@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель администратора</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 1000px; 
+            width: 100%;
+            overflow-x: auto;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #e74c3c;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+        .empty-msg {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .form-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-decoration: none;
+        }
+        .form-link:hover {
+            color: #3498db;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Список заявок</h2>
+
+        <?php if (!empty($message)): ?>
+            <div class="alert-success">
+                <?= htmlspecialchars($message) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (empty($applications)): ?>
+            <div class="empty-msg">Заявок пока нет.</div>
+        <?php else: ?>
+            <form method="POST" action="">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Удалить</th>
+                            <th>Дата</th>
+                            <th>IP</th>
+                            <th>Имя</th>
+                            <th>Фамилия</th>
+                            <th>Email</th>
+                            <th>Телефон</th>
+                            <th>Тема</th>
+                            <th>Оплата</th>
+                            <th>Рассылка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($applications as $index => $data): ?>
+                            <tr>
+                                <td style="text-align: center;">
+                                    <input type="checkbox" name="delete[]" value="<?= $index ?>">
+                                </td>
+                                <td><?= htmlspecialchars($data[0] ?? '') ?></td>
+                                <td><?= htmlspecialchars($data[1] ?? '') ?></td>
+                                <td><?= htmlspecialchars($data[2] ?? '') ?></td>
+                                <td><?= htmlspecialchars($data[3] ?? '') ?></td>
+                                <td><?= htmlspecialchars($data[4] ?? '') ?></td>
+                                <td><?= htmlspecialchars($data[5] ?? '') ?></td>
+                                <td><?= htmlspecialchars($data[6] ?? '') ?></td>
+                                <td><?= htmlspecialchars($data[7] ?? '') ?></td>
+                                <td><?= htmlspecialchars($data[8] ?? '') ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                
+                <button type="submit">Удалить выбранные</button>
+            </form>
+        <?php endif; ?>
+
+        <a class="form-link" href="hw5_ex1.php">Вернуться к форме</a>
+    </div>
+</body>
+</html>
