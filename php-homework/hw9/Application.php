@@ -1,7 +1,7 @@
 <?php
 
 class Application {
-    // Свойства класса согласно ТЗ [cite: 51, 58]
+
     public $name;
     public $surname;
     public $email;
@@ -16,7 +16,7 @@ class Application {
     const FILENAME = 'applications.txt';
     const DELIMITER = '|';
 
-    // Справочники для корректного отображения имен в админке [cite: 108]
+    // Справочники для корректного отображения имен в админке 
     public static $topicsMap = [
         'business' => 'Бизнес',
         'tech' => 'Технологии',
@@ -43,7 +43,7 @@ class Application {
         $this->status = 'active';
     }
 
-    // Метод проверки заявки [cite: 110]
+    // Метод проверки заявки 
     public function validate() {
         $errors = [];
         if (empty($this->name)) $errors['name'] = 'Поле с именем обязательно к заполнению!';
@@ -55,7 +55,7 @@ class Application {
         return $errors;
     }
 
-    // Метод сохранения в файловую систему [cite: 116]
+    // Метод сохранения в файловую систему
     public function save() {
         $data = [
             $this->date, $this->ip, $this->name, $this->surname, 
@@ -66,7 +66,7 @@ class Application {
         file_put_contents(self::FILENAME, $line, FILE_APPEND);
     }
 
-    // Метод чтения заявок [cite: 116]
+    // Метод чтения заявок 
     public static function getAll() {
         $apps = [];
         if (file_exists(self::FILENAME)) {

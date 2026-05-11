@@ -1,5 +1,5 @@
 <?php
-session_start(); // Инициализация сессии [cite: 171]
+session_start(); // Инициализация сессии
 require_once 'Application.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['errors'] = $errors;
         $_SESSION['form_data'] = $_POST;
     }
-    header('Location: hw9_ex1.php'); // Редирект для предотвращения повторной отправки [cite: 172]
+    header('Location: hw9_ex1.php'); // Редирект для предотвращения повторной отправки 
     exit;
 }
 
@@ -24,4 +24,4 @@ $form_data = $_SESSION['form_data'] ?? [];
 
 unset($_SESSION['success'], $_SESSION['errors']);
 
-require 'hw9_ex1.html'; // Подключение оригинального HTML [cite: 91]
+require 'hw9_ex1.html'; // Подключение оригинального HTML 
