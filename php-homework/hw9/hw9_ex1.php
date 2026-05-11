@@ -1,81 +1,27 @@
 <?php
+session_start(); // Инициализация сессии [cite: 171]
+require_once 'Application.php';
 
-$topics = [
-    'business' => 'Бизнес',
-    'tech' => 'Технологии',
-    'marketing' => 'Реклама и Маркетинг'
-];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $app = new Application($_POST);
+    $errors = $app->validate();
 
-$payments = [
-    'webmoney' => 'WebMoney',
-    'yandex' => 'Яндекс.Деньги',
-    'paypal' => 'PayPal',
-    'card' => 'кредитная карта'
-];
-
-$success_msg = false;
-if (!empty($_GET['success'])) {
-    if ($_GET['success'] >= time()) {
-        $success_msg = true;
+    if (empty($errors)) {
+        $app->save();
+        $_SESSION['success'] = true;
+        unset($_SESSION['form_data'], $_SESSION['errors']);
     } else {
-        header('Location: hw5_ex1.php');
-        exit;
+        $_SESSION['errors'] = $errors;
+        $_SESSION['form_data'] = $_POST;
     }
+    header('Location: hw9_ex1.php'); // Редирект для предотвращения повторной отправки [cite: 172]
+    exit;
 }
 
-$errors = [];
-if (count($_POST)) {
+$success = $_SESSION['success'] ?? false;
+$errors = $_SESSION['errors'] ?? [];
+$form_data = $_SESSION['form_data'] ?? [];
 
-    if (empty($_POST['name'])) {
-        $errors['name'] = 'Поле с именем обязательно к заполнению!';
-    }
-    if (empty($_POST['surname'])) {
-        $errors['surname'] = 'Поле с фамилией обязательно к заполнению!';
-    }
-    if (empty($_POST['email'])) {
-        $errors['email'] = 'Поле с email обязательно к заполнению!';
-    }
-    if (empty($_POST['phone'])) {
-        $errors['phone'] = 'Поле с телефоном обязательно к заполнению!';
-    }
-    if (empty($_POST['topic'])) {
-        $errors['topic'] = 'Выберите тематику!';
-    }
-    if (empty($_POST['payment'])) {
-        $errors['payment'] = 'Выберите метод оплаты!';
-    }
+unset($_SESSION['success'], $_SESSION['errors']);
 
-    if (!$errors) {
-        $filename = 'applications.txt';
-        $delimiter = '|';
-
-        $name = $_POST['name'] ?? '';
-        $surname = $_POST['surname'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $phone = $_POST['phone'] ?? '';
-        $topic = $topics[$_POST['topic']] ?? '-';
-        $payment = $payments[$_POST['payment']] ?? '-';
-        $newsletter = !empty($_POST['newsletter']) ? 'Да' : 'Нет';
-
-        $name = str_replace($delimiter, '', trim($name));
-        $surname = str_replace($delimiter, '', trim($surname));
-        $email = str_replace($delimiter, '', trim($email));
-        $phone = str_replace($delimiter, '', trim($phone));
-        $topic = str_replace($delimiter, '', trim($topic));
-        $payment = str_replace($delimiter, '', trim($payment));
-
-        $date = date('Y-m-d H:i:s');
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-        $status = 'active';
-
-        $data = [$date, $ip, $name, $surname, $email, $phone, $topic, $payment, $newsletter, $status];
-        $line = implode($delimiter, $data) . PHP_EOL;
-
-        file_put_contents($filename, $line, FILE_APPEND);
-
-        header('Location: hw5_ex1.php?success=' . (time() + 10));
-        exit;
-    }
-}
-
-require 'hw5_ex1.html';
+require 'hw9_ex1.html'; // Подключение оригинального HTML [cite: 91]
