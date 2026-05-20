@@ -80,7 +80,7 @@ BEGIN
     WHERE p.group_id = g.id AND p.group_id = g_id;
 END $$
 
--- Задание 7: (Исправлена таблица orders на sales)
+-- Задание 7:
 DROP PROCEDURE IF EXISTS sp_product_sales_period $$
 CREATE PROCEDURE sp_product_sales_period (IN prod_name VARCHAR(255), IN days INT)
 BEGIN
@@ -97,7 +97,7 @@ BEGIN
       AND sl.date >= DATE_SUB(CURDATE(), INTERVAL interval_d DAY);
 END $$
 
--- Задание 8: (Исправлена таблица orders на sales и логика IF)
+-- Задание 8: 
 DROP PROCEDURE IF EXISTS sp_check_price_discrepancies $$
 CREATE PROCEDURE sp_check_price_discrepancies ()
 BEGIN
