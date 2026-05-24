@@ -1,3 +1,4 @@
+USE test_db;
 CREATE TABLE `participants` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
