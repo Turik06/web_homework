@@ -14,4 +14,4 @@ $message = $_SESSION['msg'] ?? '';
 unset($_SESSION['msg']);
 $applications = Application::getAll($pdo); // Чтение данных через метод класса
 
-require 'hw9_ex2.html';
+require 'hw10_ex2.html';
