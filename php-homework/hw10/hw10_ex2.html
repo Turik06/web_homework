@@ -14,7 +14,7 @@
     <h2>Список заявок</h2>
     <?php if ($message): ?> <p style="color: green;"><?= $message ?></p> <?php endif; ?>
 
-    <form method="POST" action="hw9_ex2.php">
+    <form method="POST" action="hw10_ex2.php">
         <table>
             <thead>
                 <tr>
@@ -22,20 +22,20 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($applications as $index => $data): ?>
+                <?php foreach ($applications as $data): ?>
                     <tr>
-                        <td><input type="checkbox" name="delete[]" value="<?= $index ?>"></td>
-                        <td><?= htmlspecialchars($data[0]) ?></td>
-                        <td><?= htmlspecialchars($data[2] . ' ' . $data[3]) ?></td>
-                        <td><?= htmlspecialchars($data[4]) ?></td>
-                        <td><?= htmlspecialchars(Application::$topicsMap[$data[6]] ?? $data[6]) ?></td>
-                        <td><?= htmlspecialchars(Application::$paymentsMap[$data[7]] ?? $data[7]) ?></td>
+                        <td><input type="checkbox" name="delete[]" value="<?= $data['id'] ?>"></td>
+                        <td><?= htmlspecialchars($data['created_at']) ?></td>
+                        <td><?= htmlspecialchars($data['name'] . ' ' . $data['lastname']) ?></td>
+                        <td><?= htmlspecialchars($data['email']) ?></td>
+                        <td><?= htmlspecialchars(Application::$topicsMap[$data['subject']] ?? $data['subject']) ?></td>
+                        <td><?= htmlspecialchars(Application::$paymentsMap[$data['payment']] ?? $data['payment']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
         <br><button type="submit">Удалить выбранные</button>
     </form>
-    <br><a href="hw9_ex1.php">Вернуться к форме</a>
+    <br><a href="hw10_ex1.php">Вернуться к форме</a>
 </body>
 </html>
