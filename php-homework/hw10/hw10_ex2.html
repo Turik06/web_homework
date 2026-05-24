@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель администратора</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Список заявок</h2>
+    <?php if ($message): ?> <p style="color: green;"><?= $message ?></p> <?php endif; ?>
+
+    <form method="POST" action="hw9_ex2.php">
+        <table>
+            <thead>
+                <tr>
+                    <th>X</th><th>Дата</th><th>Имя</th><th>Email</th><th>Тема</th><th>Оплата</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($applications as $index => $data): ?>
+                    <tr>
+                        <td><input type="checkbox" name="delete[]" value="<?= $index ?>"></td>
+                        <td><?= htmlspecialchars($data[0]) ?></td>
+                        <td><?= htmlspecialchars($data[2] . ' ' . $data[3]) ?></td>
+                        <td><?= htmlspecialchars($data[4]) ?></td>
+                        <td><?= htmlspecialchars(Application::$topicsMap[$data[6]] ?? $data[6]) ?></td>
+                        <td><?= htmlspecialchars(Application::$paymentsMap[$data[7]] ?? $data[7]) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <br><button type="submit">Удалить выбранные</button>
+    </form>
+    <br><a href="hw9_ex1.php">Вернуться к форме</a>
+</body>
+</html>
