@@ -9,25 +9,21 @@ class Application {
     public $topic;
     public $payment;
     public $newsletter;
-    public $date;
-    public $ip;
-    public $status;
 
-    const FILENAME = 'applications.txt';
-    const DELIMITER = '|';
-
-    // Справочники для корректного отображения имен в админке 
     public static $topicsMap = [
-        'business' => 'Бизнес',
-        'tech' => 'Технологии',
-        'marketing' => 'Реклама и Маркетинг'
+        1 => 'Бизнес и коммуникации',
+        2 => 'Технологии',
+        3 => 'Реклама',
+        4 => 'Маркетинг',
+        5 => 'Проектирование'
     ];
 
     public static $paymentsMap = [
-        'webmoney' => 'WebMoney',
-        'yandex' => 'Яндекс.Деньги',
-        'paypal' => 'PayPal',
-        'card' => 'кредитная карта'
+        1 => 'WebMoney',
+        2 => 'Яндекс.Деньги',
+        3 => 'PayPal',
+        4 => 'Кредитная карта',
+        5 => 'Робокасса'
     ];
 
     public function __construct($data = []) {
@@ -35,62 +31,52 @@ class Application {
         $this->surname = trim($data['surname'] ?? '');
         $this->email = trim($data['email'] ?? '');
         $this->phone = trim($data['phone'] ?? '');
-        $this->topic = $data['topic'] ?? '';
-        $this->payment = $data['payment'] ?? '';
-        $this->newsletter = !empty($data['newsletter']) ? 'Да' : 'Нет';
-        $this->date = date('Y-m-d H:i:s');
-        $this->ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        $this->status = 'active';
+        $this->topic = (int)($data['topic'] ?? 0);
+        $this->payment = (int)($data['payment'] ?? 0);
+        $this->newsletter = !empty($data['newsletter']) ? 1 : 0;
     }
 
-    // Метод проверки заявки 
     public function validate() {
         $errors = [];
         if (empty($this->name)) $errors['name'] = 'Поле с именем обязательно к заполнению!';
         if (empty($this->surname)) $errors['surname'] = 'Поле с фамилией обязательно к заполнению!';
         if (empty($this->email)) $errors['email'] = 'Поле с email обязательно к заполнению!';
         if (empty($this->phone)) $errors['phone'] = 'Поле с телефоном обязательно к заполнению!';
-        if (empty($this->topic)) $errors['topic'] = 'Выберите тематику!';
-        if (empty($this->payment)) $errors['payment'] = 'Выберите метод оплаты!';
+        if (empty($this->topic) || !isset(self::$topicsMap[$this->topic])) $errors['topic'] = 'Выберите корректную тематику!';
+        if (empty($this->payment) || !isset(self::$paymentsMap[$this->payment])) $errors['payment'] = 'Выберите корректный метод оплаты!';
         return $errors;
     }
 
-    // Метод сохранения в файловую систему
-    public function save() {
-        $data = [
-            $this->date, $this->ip, $this->name, $this->surname, 
-            $this->email, $this->phone, $this->topic, $this->payment, 
-            $this->newsletter, $this->status
-        ];
-        $line = implode(self::DELIMITER, $data) . PHP_EOL;
-        file_put_contents(self::FILENAME, $line, FILE_APPEND);
+    // Сохранение в базу данных
+    public function save($pdo) {
+        $sql = "INSERT INTO participants (name, lastname, email, tel, subject, payment, mailing) 
+                VALUES (:name, :lastname, :email, :tel, :subject, :payment, :mailing)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':name' => $this->name,
+            ':lastname' => $this->surname,
+            ':email' => $this->email,
+            ':tel' => $this->phone,
+            ':subject' => $this->topic,
+            ':payment' => $this->payment,
+            ':mailing' => $this->newsletter
+        ]);
     }
 
-    // Метод чтения заявок 
-    public static function getAll() {
-        $apps = [];
-        if (file_exists(self::FILENAME)) {
-            $lines = file(self::FILENAME, FILE_IGNORE_NEW_LINES);
-            foreach ($lines as $idx => $line) {
-                $data = explode(self::DELIMITER, $line);
-                if (($data[9] ?? '') !== 'deleted') {
-                    $apps[$idx] = $data;
-                }
-            }
-        }
-        return $apps;
+    // Чтение активных заявок 
+    public static function getAll($pdo) {
+        $sql = "SELECT * FROM participants WHERE deleted_at IS NULL ORDER BY created_at DESC";
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll();
     }
 
-    public static function delete($indices) {
-        if (!file_exists(self::FILENAME)) return;
-        $lines = file(self::FILENAME);
-        foreach ($indices as $idx) {
-            if (isset($lines[$idx])) {
-                $data = explode(self::DELIMITER, trim($lines[$idx]));
-                $data[9] = 'deleted';
-                $lines[$idx] = implode(self::DELIMITER, $data) . PHP_EOL;
-            }
-        }
-        file_put_contents(self::FILENAME, implode('', $lines));
+    // Мягкое удаление 
+    public static function delete($pdo, $ids) {
+        if (empty($ids)) return;
+        
+        $inQuery = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "UPDATE participants SET deleted_at = NOW() WHERE id IN ($inQuery)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($ids);
     }
 }
