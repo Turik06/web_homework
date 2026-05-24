@@ -1,5 +1,6 @@
 <?php
-session_start(); // Инициализация сессии
+session_start(); 
+require_once 'db.php';
 require_once 'Application.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -7,14 +8,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = $app->validate();
 
     if (empty($errors)) {
-        $app->save();
+        $app->save($pdo);
         $_SESSION['success'] = true;
         unset($_SESSION['form_data'], $_SESSION['errors']);
     } else {
         $_SESSION['errors'] = $errors;
         $_SESSION['form_data'] = $_POST;
     }
-    header('Location: hw9_ex1.php'); // Редирект для предотвращения повторной отправки 
+    header('Location: hw10_ex1.php'); // Редирект для предотвращения повторной отправки 
     exit;
 }
 
@@ -24,4 +25,4 @@ $form_data = $_SESSION['form_data'] ?? [];
 
 unset($_SESSION['success'], $_SESSION['errors']);
 
-require 'hw9_ex1.html'; // Подключение оригинального HTML 
+require 'hw10_ex1.html'; // Подключение оригинального HTML 
