@@ -13,7 +13,7 @@
     <title>Мой календарь</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #fff; color: #000; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; border: 2px solid #000; padding: 20px; }
+       .container { max-width: 900px; margin: 0 auto; padding: 20px; }
         fieldset { border: 2px solid #000; padding: 20px; margin-bottom: 20px; }
         legend { font-weight: bold; padding: 0 5px; }
         .form-row { margin-bottom: 15px; display: flex; align-items: flex-start; }
