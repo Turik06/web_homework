@@ -36,7 +36,10 @@
 <body>
 
 <div class="container">
-    <h1>Мой календарь</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0;">Мой календарь</h1>
+        <a href="auth.php?action=logout" style="color: red; text-decoration: none; border: 2px solid red; padding: 5px 15px; font-weight: bold; background: #fff;">Выйти</a>
+    </div>
 
     <fieldset>
         <legend><?= isset($editTask) ? 'Редактировать задачу' : 'Новая задача' ?></legend>
