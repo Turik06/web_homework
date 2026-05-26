@@ -10,7 +10,6 @@ class Task {
         $sql = "SELECT * FROM `tasks` WHERE 1=1";
         $params = [];
 
-        // Фильтрация данных
         if ($filter === 'current') {
             $sql .= " AND `status` = 'Текущая' AND `task_datetime` >= NOW()";
         } elseif ($filter === 'overdue') {
@@ -20,6 +19,10 @@ class Task {
         } elseif ($filter === 'date' && $date) {
             $sql .= " AND DATE(`task_datetime`) = :date";
             $params[':date'] = $date;
+        } elseif ($filter === 'this_week') {
+            $sql .= " AND YEARWEEK(`task_datetime`, 1) = YEARWEEK(CURDATE(), 1)";
+        } elseif ($filter === 'next_week') {
+            $sql .= " AND YEARWEEK(`task_datetime`, 1) = YEARWEEK(CURDATE() + INTERVAL 1 WEEK, 1)";
         }
 
         $sql .= " ORDER BY `task_datetime` ASC";
@@ -59,5 +62,10 @@ class Task {
             ':status' => $data['status'],
             ':id' => $id
         ]);
+    }
+
+    public function deleteTask(int $id): bool {
+        $stmt = $this->dbo->prepare("DELETE FROM `tasks` WHERE `id` = :id LIMIT 1");
+        return $stmt->execute([':id' => $id]);
     }
 }

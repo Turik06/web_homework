@@ -29,6 +29,8 @@
         th, td { padding: 8px; text-align: left; border-left: 1px solid #000; border-right: 1px solid #000; }
         th { border-bottom: 2px solid #000; font-weight: normal; }
         tr:nth-child(even) { background-color: #f0f0f0; }
+        .delete-btn { border: 2px solid #000; background: #ffcccc; padding: 5px 20px; cursor: pointer; margin-left: 10px; }
+        .btn-group { margin-left: 165px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -89,11 +91,17 @@
                 </select>
             </div>
             <?php endif; ?>
+            
+            <div class="form-row btn-group" style="margin-left: 165px;">
+                <button type="submit" class="submit-btn" style="margin-left: 0;"><?= isset($editTask) ? 'Сохранить' : 'Добавить' ?></button>
+                
+                <?php if (isset($editTask)): ?>
+                    <button type="submit" name="action" value="delete" class="delete-btn" formnovalidate onclick="return confirm('Вы уверены, что хотите удалить эту задачу?');">Удалить</button>
+                    
+                    <a href="index.php?filter=<?= htmlspecialchars($filter) ?>" style="margin-left:15px; margin-top: 5px;">Отмена</a>
+                <?php endif; ?>
+            </div>
 
-            <button type="submit" class="submit-btn"><?= isset($editTask) ? 'Сохранить' : 'Добавить' ?></button>
-            <?php if (isset($editTask)): ?>
-                <a href="index.php?filter=<?= htmlspecialchars($filter) ?>" style="margin-left:10px;">Отмена</a>
-            <?php endif; ?>
         </form>
     </fieldset>
 
@@ -112,8 +120,22 @@
                 <input type="date" name="date" value="<?= htmlspecialchars($filter_date ?? date('Y-m-d')) ?>" onchange="this.form.submit()">
             </form>
 
-            <a href="index.php?filter=date&date=<?= date('Y-m-d') ?>">сегодня</a> |
-            <a href="index.php?filter=date&date=<?= date('Y-m-d', strtotime('+1 day')) ?>">завтра</a>
+            <?php 
+                $today = date('Y-m-d');
+                $tomorrow = date('Y-m-d', strtotime('+1 day'));
+            ?>
+
+            <a href="index.php?filter=date&date=<?= $today ?>" <?= ($filter === 'date' && $filter_date === $today) ? 'style="color:#000; text-decoration:none;"' : '' ?>>сегодня</a> 
+            <span style="margin: 0 5px; font-weight: bold;">|</span> 
+
+            <a href="index.php?filter=date&date=<?= $tomorrow ?>" <?= ($filter === 'date' && $filter_date === $tomorrow) ? 'style="color:#000; text-decoration:none;"' : '' ?>>завтра</a> 
+            <span style="margin: 0 5px; font-weight: bold;">|</span> 
+            
+            <a href="index.php?filter=this_week" <?= $filter === 'this_week' ? 'style="color:#000; text-decoration:none;"' : '' ?>>на эту неделю</a> 
+            <span style="margin: 0 5px; font-weight: bold;">|</span> 
+            
+            <a href="index.php?filter=next_week" <?= $filter === 'next_week' ? 'style="color:#000; text-decoration:none;"' : '' ?>>на след. неделю</a>
+
         </div>
 
         <table>
