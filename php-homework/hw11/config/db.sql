@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Таблица задач
 CREATE TABLE IF NOT EXISTS `tasks` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id` INT(10) UNSIGNED NOT NULL, -- Ссылка на владельца задачи
+  `user_id` INT(10) UNSIGNED NOT NULL, 
   `theme` VARCHAR(255) NOT NULL,
   `type` ENUM('Встреча', 'Звонок', 'Совещание', 'Дело') NOT NULL DEFAULT 'Дело',
   `place` VARCHAR(255) DEFAULT NULL,

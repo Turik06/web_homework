@@ -9,7 +9,6 @@ $userModel = new User($dbo);
 $action = $_GET['action'] ?? 'login';
 $error = '';
 
-// Если пользователь хочет выйти
 if ($action === 'logout') {
     session_destroy();
     header('Location: auth.php');
