@@ -1,7 +1,8 @@
 DELIMITER $$
 
 -- Задание 1:
-CREATE OR REPLACE FUNCTION fn_is_jubilee (birth_date DATE)
+DROP FUNCTION IF EXISTS fn_is_jubilee $$
+CREATE FUNCTION fn_is_jubilee (birth_date DATE)
 RETURNS INT
 DETERMINISTIC
 BEGIN
@@ -15,7 +16,8 @@ BEGIN
 END $$
 
 -- Задание 2: 
-CREATE OR REPLACE FUNCTION fn_format_fio (fio VARCHAR(255))
+DROP FUNCTION IF EXISTS fn_format_fio $$
+CREATE FUNCTION fn_format_fio (fio VARCHAR(255))
 RETURNS VARCHAR(255)
 DETERMINISTIC
 BEGIN
@@ -35,7 +37,8 @@ BEGIN
 END $$
 
 -- Задание 3:
-CREATE OR REPLACE FUNCTION fn_salesman_income (rate DECIMAL(4,2), total_sum DECIMAL(10,2))
+DROP FUNCTION IF EXISTS fn_salesman_income $$
+CREATE FUNCTION fn_salesman_income (rate DECIMAL(4,2), total_sum DECIMAL(10,2))
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
@@ -43,7 +46,8 @@ BEGIN
 END $$
 
 -- Задание 4: 
-CREATE OR REPLACE FUNCTION fn_company_income (price DECIMAL(10,2), qty INT)
+DROP FUNCTION IF EXISTS fn_company_income $$
+CREATE FUNCTION fn_company_income (price DECIMAL(10,2), qty INT)
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
@@ -51,7 +55,8 @@ BEGIN
 END $$
 
 -- Задание 5:
-CREATE OR REPLACE PROCEDURE sp_get_jubilees ()
+DROP PROCEDURE IF EXISTS sp_get_jubilees $$
+CREATE PROCEDURE sp_get_jubilees ()
 BEGIN
     SELECT 
         CONCAT(last_name, ' ', first_name, ' ', middle_name) AS ФИО,
@@ -62,7 +67,8 @@ BEGIN
 END $$
 
 -- Задание 6: 
-CREATE OR REPLACE PROCEDURE sp_products_by_group (IN g_id INT)
+DROP PROCEDURE IF EXISTS sp_products_by_group $$
+CREATE PROCEDURE sp_products_by_group (IN g_id INT)
 BEGIN
     SELECT 
         p.name AS Товар, 
@@ -70,12 +76,13 @@ BEGIN
         p.plu AS Артикул, 
         p.cost AS Цена, 
         p.available AS Наличие
-    FROM products AS p, groups AS g
+    FROM products AS p, `groups` AS g
     WHERE p.group_id = g.id AND p.group_id = g_id;
 END $$
 
--- Задание 7:
-CREATE OR REPLACE PROCEDURE sp_product_sales_period (IN prod_name VARCHAR(255), IN days INT)
+-- Задание 7: (Исправлена таблица orders на sales)
+DROP PROCEDURE IF EXISTS sp_product_sales_period $$
+CREATE PROCEDURE sp_product_sales_period (IN prod_name VARCHAR(255), IN days INT)
 BEGIN
     DECLARE interval_d INT;
     SET interval_d = IF(days IN (7, 14, 30), days, 7);
@@ -83,27 +90,32 @@ BEGIN
     SELECT 
         p.name AS Товар,
         fn_format_fio(CONCAT(s.last_name, ' ', s.first_name, ' ', s.middle_name)) AS Торгпред,
-        o.date AS Дата
-    FROM orders AS o, products AS p, salesmen AS s
-    WHERE o.product_id = p.id AND o.salesman_id = s.id
+        sl.date AS Дата
+    FROM sales AS sl, products AS p, salesmen AS s
+    WHERE sl.product_id = p.id AND sl.salesman_id = s.id
       AND p.name = prod_name
-      AND o.date >= DATE_SUB(CURDATE(), INTERVAL interval_d DAY);
+      AND sl.date >= DATE_SUB(CURDATE(), INTERVAL interval_d DAY);
 END $$
 
--- Задание 8: 
-CREATE OR REPLACE PROCEDURE sp_check_price_discrepancies ()
+-- Задание 8: (Исправлена таблица orders на sales и логика IF)
+DROP PROCEDURE IF EXISTS sp_check_price_discrepancies $$
+CREATE PROCEDURE sp_check_price_discrepancies ()
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM orders AS o, products AS p 
-        WHERE o.product_id = p.id AND o.cost != p.cost 
-        AND (p.cost_changed_at IS NULL OR p.cost_changed_at <= o.date)
-    ) THEN
+    DECLARE discrepancies_count INT DEFAULT 0;
+
+    -- Подсчитываем количество несоответствий в переменную 
+    SELECT COUNT(*) INTO discrepancies_count
+    FROM sales AS sl, products AS p
+    WHERE sl.product_id = p.id AND sl.cost != p.cost
+      AND (p.cost_changed_at IS NULL OR DATE(p.cost_changed_at) <= sl.date);
+
+    IF discrepancies_count = 0 THEN
         SELECT 'Все цены соответствуют' AS Результат;
     ELSE
-        SELECT o.id AS ID_заказа, p.name AS Товар, o.cost AS Цена_в_чеке, p.cost AS Базовая_цена
-        FROM orders AS o, products AS p
-        WHERE o.product_id = p.id AND o.cost != p.cost
-        AND (p.cost_changed_at IS NULL OR p.cost_changed_at <= o.date);
+        SELECT sl.id AS ID_заказа, p.name AS Товар, sl.cost AS Цена_в_чеке, p.cost AS Базовая_цена
+        FROM sales AS sl, products AS p
+        WHERE sl.product_id = p.id AND sl.cost != p.cost
+          AND (p.cost_changed_at IS NULL OR DATE(p.cost_changed_at) <= sl.date);
     END IF;
 END $$
 
