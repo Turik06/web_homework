@@ -1,0 +1,86 @@
+CREATE DATABASE IF NOT EXISTS population_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE population_db;
+
+-- 1 Справочник полов
+CREATE TABLE IF NOT EXISTS genders (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+-- 2 Справочник семейных положений
+CREATE TABLE IF NOT EXISTS marital_statuses (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+-- 3 Страны
+CREATE TABLE IF NOT EXISTS countries (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  iso_code VARCHAR(3) NOT NULL,
+  area DECIMAL(12,2) NOT NULL COMMENT 'Площадь в кв. км',
+  population_cache INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Кэшированная численность',
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  PRIMARY KEY (id)
+);
+
+-- 4 Регионы
+CREATE TABLE IF NOT EXISTS regions (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  country_id INT UNSIGNED NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE RESTRICT
+);
+
+-- 5 Населенные пункты 
+CREATE TABLE IF NOT EXISTS cities (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  region_id INT UNSIGNED NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  is_capital TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (region_id) REFERENCES regions(id) ON DELETE RESTRICT
+);
+
+-- 6 Граждане 
+CREATE TABLE IF NOT EXISTS citizens (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  first_name VARCHAR(255) NOT NULL,
+  last_name VARCHAR(255) NOT NULL,
+  birth_date DATE NOT NULL,
+  gender_id INT UNSIGNED NOT NULL,
+  marital_status_id INT UNSIGNED NOT NULL,
+  city_id INT UNSIGNED NOT NULL COMMENT 'Текущее место проживания',
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL COMMENT 'Мягкое удаление (например, смерть или эмиграция)',
+  PRIMARY KEY (id),
+  FOREIGN KEY (gender_id) REFERENCES genders(id) ON DELETE RESTRICT,
+  FOREIGN KEY (marital_status_id) REFERENCES marital_statuses(id) ON DELETE RESTRICT,
+  FOREIGN KEY (city_id) REFERENCES cities(id) ON DELETE RESTRICT
+);
+
+-- 7 История миграции 
+CREATE TABLE IF NOT EXISTS migration_records (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  citizen_id INT UNSIGNED NOT NULL,
+  from_city_id INT UNSIGNED NULL COMMENT 'Может быть NULL, если это первая регистрация',
+  to_city_id INT UNSIGNED NOT NULL,
+  migration_date DATE NOT NULL,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  FOREIGN KEY (citizen_id) REFERENCES citizens(id) ON DELETE CASCADE,
+  FOREIGN KEY (from_city_id) REFERENCES cities(id) ON DELETE RESTRICT,
+  FOREIGN KEY (to_city_id) REFERENCES cities(id) ON DELETE RESTRICT
+);
