@@ -12,10 +12,10 @@ INSERT INTO `marital_statuses` (`name`) VALUES
 ('Вдовец / Вдова');
 
 -- 2 География
--- population_cache 0 (в дальнейшем будет работать с помощью триггера)
-INSERT INTO `countries` (`name`, `iso_code`, `area`, `population_cache`) VALUES
-('Российская Федерация', 'RU', 17125191.00, 0),
-('Монголия', 'MN', 1564116.00, 0);
+-- population_cache не указываем, так как по умолчанию стоит 0, а дальше он считается триггером
+INSERT INTO `countries` (`name`, `iso_code`, `area`) VALUES
+('Российская Федерация', 'RU', 17125191.00),
+('Монголия', 'MN', 1564116.00);
 
 INSERT INTO `regions` (`country_id`, `name`) VALUES
 (1, 'Иркутская область'),          
